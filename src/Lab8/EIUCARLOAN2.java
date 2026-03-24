@@ -5,33 +5,36 @@ import java.util.Scanner;
 public class EIUCARLOAN2 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        double oldCP = sc.nextLong();
-        long newCP = sc.nextLong();
-        double downPayPercent = sc.nextDouble() / 100.0;
-        int term = sc.nextInt();
-        int sellingTime = sc.nextInt();
-        double depreciationRate = sc.nextDouble() / 100.0;
+        long oldCarPrice = sc.nextLong();
+        long newCarPrice = sc.nextLong();
+        double downPaymentRate = sc.nextDouble() / 100;
+        double loanMonths = sc.nextDouble();
+        int carSellingPoint = sc.nextInt();
+        double depreciationRate = sc.nextDouble() / 100;
 
-        double loan = oldCP - oldCP * downPayPercent;
-        double valueOldCareAfter44Months = oldCP * 0.9 * Math.pow(1 - depreciationRate, sellingTime - 1);
-        double downPayment = newCP * downPayPercent;
-        double debt0 = valueOldCareAfter44Months - downPayment;
+        double loanAmount = oldCarPrice * (1 - downPaymentRate);
 
-        double high = 0.2;
-        double low = 0;
-        double middle = 0;
-        while (high - low > Math.pow(10, -6)) {
-            middle = (high + low) / 2;
-            double R = 1 + middle;
-            double G = (loan * Math.pow(R, term) * (R - 1)) / (Math.pow(R, term) - 1);
-            double debt = loan * Math.pow(R, sellingTime - 1) - G * (Math.pow(R, sellingTime - 1) - 1) / (R - 1);
-            if (debt > debt0) {
-                high = middle;
+        double sellingCar = oldCarPrice * 0.9 * Math.pow(1 - depreciationRate, carSellingPoint - 1);
+        double downPaymentNew = downPaymentRate * newCarPrice;
+
+        double low = 0, high = 0.2;
+        for (int i = 0; i < 100; i++) {
+            double mid = low + (high - low) / 2;
+
+            double monthlyPayment = loanAmount * Math.pow(1 + mid, loanMonths) * (mid)
+                    / (Math.pow(1 + mid, loanMonths) - 1);
+
+            double oldLoanRemaining = loanAmount * Math.pow(1 + mid, carSellingPoint - 1)
+                    - monthlyPayment * (Math.pow(1 + mid, carSellingPoint - 1) - 1) / (mid);
+
+            if (sellingCar - downPaymentNew - oldLoanRemaining < 0) {
+                high = mid;
             } else {
-                low = middle;
+                low = mid;
             }
         }
-        System.out.printf("%.4f", (low + high) * 6);
+        System.out.printf("%.4f", (high + low) * 6);
+
         sc.close();
     }
 }
